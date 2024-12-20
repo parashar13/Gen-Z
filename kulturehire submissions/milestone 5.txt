@@ -1,0 +1,240 @@
+1. What is the gender distribution of respondents from India?
+   SELECT
+gender,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+country = 'India'
+GROUP BY
+gender;
+
+2. What percentage of respondents from India are interested in education abroad and sponsorship?
+
+SELECT
+(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM respondents WHERE country = 'India')) AS percentage
+FROM
+respondents
+WHERE
+country = 'India'
+AND education in abroad = TRUE
+AND sponsorship = TRUE;
+
+3. What are the 6 top influences on career aspirations for respondents in India?
+
+SELECT
+influencers,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+country = 'India'
+GROUP BY
+influencers
+ORDER BY
+count DESC
+LIMIT 6;
+
+4. How do career aspiration influences vary by gender in India?
+
+SELECT
+gender,
+influencers,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+country = 'India'
+GROUP BY
+gender,
+influencers
+ORDER BY
+gender,
+count DESC;
+
+5. What percentage of respondents are willing to work for a company for at least 3 years?
+
+SELECT
+(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM respondents)) AS percentage
+FROM
+respondents
+WHERE
+willing_to_work_3_years = TRUE;
+
+6. How many respondents prefer to work for socially impactful companies?
+
+SELECT
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+socially impactful = TRUE;
+
+7. How does the preference for socially impactful companies vary by gender?
+
+SELECT
+gender,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+socially impactful = TRUE
+GROUP BY
+gender
+ORDER BY
+count DESC;
+
+8. What is the distribution of minimum expected salary in the first three years among respondents?
+
+SELECT
+CASE
+WHEN expected_salary_first_3_years < 20000 THEN 'Below 20K'
+WHEN expected_salary_first_3_years BETWEEN 20000 AND 39999 THEN '20K-39K'
+WHEN expected_salary_first_3_years BETWEEN 40000 AND 59999 THEN '40K-59K'
+WHEN expected_salary_first_3_years BETWEEN 60000 AND 79999 THEN '60K-79K'
+WHEN expected_salary_first_3_years BETWEEN 80000 AND 99999 THEN '80K-99K'
+ELSE '100K and above'
+END AS salary_ range,
+COUNT(*) AS count
+FROM
+respondents
+GROUP BY
+salary_ range
+ORDER BY
+count DESC;
+
+9. What is the expected minimum monthly salary in hand?
+
+SELECT
+AVG(expected_ minimum_ salary) AS average_ minimum_ salary,
+MIN(expected_ minimum_ salary) AS minimum_ salary,
+MAX(expected_ minimum_ salary) AS maximum_ salary
+FROM
+respondents;
+WHERE  Country="India"
+
+10. What percentage of respondents prefer remote working?
+
+SELECT
+(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM respondents)) AS percentage
+FROM
+respondents
+WHERE
+remote_ working = TRUE;
+
+11. What is the preferred number of daily work hours?
+
+SELECT
+AVG(preferred_ daily_ work_ hours) AS average_ work_ hours,
+MIN(preferred_ daily_ work_ hours) AS minimum_ work_ hours,
+MAX(preferred_ daily_ work_ hours) AS maximum_ work_ hours
+FROM
+respondents;
+
+12. What are the common work frustrations among respondents?
+
+SELECT
+frustration,
+COUNT(*) AS count
+FROM
+respondents
+CROSS JOIN LATERAL STRING_SPLIT(work_ frustrations, ',') AS frustration
+GROUP BY
+frustration
+ORDER BY
+count DESC;
+
+13. How does the need for work-life balance interventions vary by gender?
+
+SELECT
+gender,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+needs_ work_ life_ balance_ intervention = TRUE
+GROUP BY
+gender
+ORDER BY
+count DESC;
+
+14. How many respondents are willing to work under an abusive manager?
+
+SELECT
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+willing_ to_ work_ abusive_ manager = TRUE;
+
+15. What is the distribution of minimum expected salary after five years?
+
+SELECT
+CASE
+WHEN expected_salary_after_five_years < 30000 THEN '< 30,000'
+WHEN expected_salary_after_five_years BETWEEN 30000 AND 39999 THEN '30,000 - 39,999'
+WHEN expected_salary_after_five_years BETWEEN 40000 AND 49999 THEN '40,000 - 49,999'
+WHEN expected_salary_after_five_years BETWEEN 50000 AND 59999 THEN '50,000 - 59,999'
+WHEN expected_salary_after_five_years BETWEEN 60000 AND 69999 THEN '60,000 - 69,999'
+WHEN expected_salary_after_five_years BETWEEN 70000 AND 79999 THEN '70,000 - 79,999'
+WHEN expected_salary_after_five_years BETWEEN 80000 AND 89999 THEN '80,000 - 89,999'
+WHEN expected_salary_after_five_years >= 90000 THEN '90,000+'
+ELSE 'Unknown'
+END AS salary_range,
+COUNT(*) AS count
+FROM
+respondents
+WHERE
+expected_ salary_ after_ five_ years IS NOT NULL -- Ensures we are only counting those with expected salaries
+GROUP BY
+salary_ range
+ORDER BY
+MIN(expected_ salary_ after_ five_ years); -- Order by the lower bound of the salary range
+
+16. What are the remote working preferences by gender?
+
+SELECT
+gender,
+SUM(CASE WHEN prefers_remote_work = TRUE THEN 1 ELSE 0 END) AS prefers_remote,
+SUM(CASE WHEN prefers_remote_work = FALSE THEN 1 ELSE 0 END) AS does_not_prefer_remote,
+COUNT(*) AS total_respondents
+FROM
+respondents
+GROUP BY
+gender
+ORDER BY
+gender;
+
+17. What are the top work frustrations for each gender?
+
+SELECT
+gender,
+work_frustrations,
+COUNT(*) AS count
+FROM
+respondents
+GROUP BY
+gender, work_ frustrations
+ORDER BY
+gender, count DESC;
+
+18. What factors boost work happiness and productivity for respondents?
+
+SELECT
+TRIM(value) AS factor,
+COUNT(*) AS count
+FROM
+respondents
+CROSS JOIN LATERAL STRING_SPLIT(factors_ boosting_ happiness_ productivity, ',') AS value
+GROUP BY
+factor
+ORDER BY
+count DESC;
+
+19. What percentage of respondents need sponsorship for education abroad?
+
+SELECT
+(COUNT(CASE WHEN needs_ sponsorship = TRUE THEN 1 END) * 100.0 / COUNT(*)) AS percentage
+FROM
+respondents;
+WHERE Country='India" 
